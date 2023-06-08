@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.active{
+    background: rgb(99, 99, 255);
+}
+:hover.active{
+    background: blue;
+}
