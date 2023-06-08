@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+
+*{
+  overflow: hidden;
+}
 .active{
     background: rgb(99, 99, 255);
 }
@@ -28,7 +32,6 @@
   
   .main:after {
     content: "";
-    background-image: url("/assets/images/grid.svg");
     z-index: 1;
     position: absolute;
     width: 100%;
@@ -64,4 +67,14 @@
     filter: blur(100px) saturate(150%);
     top: 80px;
     opacity: 0.15;
+  }
+  .blue_gradient {
+    @apply bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent;
+  }
+  .orange_gradient {
+    @apply bg-gradient-to-r from-amber-500 via-orange-600 to-yellow-500 bg-clip-text text-transparent;
+  }
+  
+  .green_gradient {
+    @apply bg-gradient-to-r from-green-400 to-green-500 bg-clip-text text-transparent;
   }

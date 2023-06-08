@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import ResultModal from "./ResultModal/ResultModal";
+import { motion } from "framer-motion";
 
 export const DragLists = () => {
     const [sortedValues, setSortedValues] = useState([]);
@@ -6,6 +8,7 @@ export const DragLists = () => {
     const [userInput, setUserInput] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
 
     // useRefs
     const dragItem = useRef();
@@ -20,6 +23,7 @@ export const DragLists = () => {
         setSortedValues([...randomValues].sort((a, b) => a - b));
         setUserInput(Array.from({ length: 5 }, () => null));
         setIsCorrect("");
+        setOpenModal(false);
     };
 
     useEffect(() => {
@@ -56,26 +60,29 @@ export const DragLists = () => {
         if (params.id === "values") {
             const newInput = [...userInput];
             const newValues = [...values];
-            if(currId === "input"){
-                (userInput[currIndex]!==null)?newValues.push(userInput[currIndex]):(null);
+            if (currId === "input") {
+                userInput[currIndex] !== null
+                    ? newValues.push(userInput[currIndex])
+                    : null;
                 newInput[currIndex] = null;
             }
             setUserInput(newInput);
             setValues(newValues);
         }
-
     };
 
     // Handle drag over event
     const handleDragOver = (event) => {
         event.preventDefault();
+    };
+    const handleDragOverInput = (event) => {
+        event.preventDefault();
         event.target.classList.add("active");
     };
-    
+
     const handleDragLeave = (event) => {
         event.target.classList.remove("active");
-
-    }
+    };
 
     const handleDragEnd = () => {
         dragNode.current.removeEventListener("dragend", handleDragEnd);
@@ -86,9 +93,11 @@ export const DragLists = () => {
 
     // Check the answer
     const checkAnswer = () => {
+        setOpenModal(true);
         const isCorrectAnswer = userInput.every(
             (value, index) => value === sortedValues[index]
         );
+
         isCorrectAnswer ? setIsCorrect("true") : setIsCorrect("false");
     };
 
@@ -99,25 +108,33 @@ export const DragLists = () => {
             currentItem.id === params.id &&
             currentItem.index === params.index
         ) {
-            return "bg-gray-600";
+            return "bg-gray-500";
         }
         return "";
     };
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <div className="mb-8">
-                <h2 className="text-xl font-bold mb-2">Drag and drop here</h2>
+        <div className="flex flex-col items-center justify-center h-[80%] w-1/2 glassmorphism cursor-none border-solid border-2 ">
+            <div className="mb-8 flex flex-col justify-center items-center">
+                <h2 className="text-xl font-bold mb-2 blue_gradient">
+                    Sort the list in Ascending order!
+                </h2>
                 <div id="input" className="flex">
                     {userInput.map((value, index) => (
                         <div
                             key={index}
-                            draggable={value!==null}
+                            draggable={value !== null}
                             id="userInput"
                             className={`${
                                 isDragging && getstyles({ id: "input", index })
-                            } w-12 h-12 bg-blue-200 flex items-center border-dotted border-blue-500 border-2 justify-center mr-2 rounded`}
-                            onDragOver={(e)=>{handleDragOver(e)}}
-                            onDragLeave={(e)=>{handleDragLeave(e)}}
+                            } w-12 h-12 bg-blue-200 flex items-center border-dotted border-blue-500 border-2 justify-center mr-2 rounded ${
+                                value !== null ? "bg-white" : ""
+                            }`}
+                            onDragOver={(e) => {
+                                handleDragOverInput(e);
+                            }}
+                            onDragLeave={(e) => {
+                                handleDragLeave(e);
+                            }}
                             onDragStart={(event) =>
                                 handleDragStart(event, { id: "input", index })
                             }
@@ -132,23 +149,34 @@ export const DragLists = () => {
                                     : null
                             }
                         >
-                            {value !== null ? value : ""}
+                            {value !== null ? value : "Drop"}
                         </div>
                     ))}
                 </div>
             </div>
-            <div>
-                <h2 className="text-xl font-bold mb-2">Sort the values</h2>
+            <div className="mb-8 flex flex-col justify-between items-center">
+               
                 <div
                     id="values"
-                    onDragOver={(e)=>{handleDragOver(e)}}
-                    onDragLeave={(e)=>{handleDragLeave(e)}}
-                    onDrop={isDragging ?(e) => handleDragEnter(e,{id: "values", index: 0}):null}
-                    className={`flex justify-center rounded-lg border-dotted border-2 p-2 pr-0 min-w-[50%] min-h-[50%]  cursor-grab`}
+                    onDragOver={(e) => {
+                        handleDragOver(e);
+                    }}
+                    onDragLeave={(e) => {
+                        handleDragLeave(e);
+                    }}
+                    onDrop={
+                        isDragging
+                            ? (e) =>
+                                  handleDragEnter(e, { id: "values", index: 0 })
+                            : null
+                    }
+                    className={`flex justify-center rounded-lg border-dotted border-2 p-2 pr-0 min-w-[48px] min-h-[48px] `}
                 >
                     {values.map((value, index) => (
-                        <div
+                        <motion.div
                             key={index}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
                             className={`${
                                 isDragging && getstyles({ id: "values", index })
                             } w-12 h-12 bg-gray-200 flex items-center justify-center mr-2 rounded`}
@@ -168,18 +196,20 @@ export const DragLists = () => {
                             }
                         >
                             {value}
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
             </div>
             {isAllFilled ? (
-                <button
+                <motion.button
                     className={`mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded`}
                     onClick={checkAnswer}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     disabled={!isAllFilled}
                 >
                     Check
-                </button>
+                </motion.button>
             ) : (
                 <button
                     className={`mt-4 px-4 py-2 bg-gray-500 text-white rounded`}
@@ -189,20 +219,11 @@ export const DragLists = () => {
                     Check
                 </button>
             )}
-            {isCorrect == "true" && (
-                <p className="text-green-500 font-bold mt-2">Correct answer!</p>
-            )}
-            {isCorrect == "false" && (
-                <p className="text-red-500 font-bold mt-2">
-                    Wrong answer. Please try again.
-                </p>
-            )}
-            <button
-                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                onClick={generateRandomValues}
-            >
-                Reset
-            </button>
+            <ResultModal
+                open={openModal}
+                onClose={generateRandomValues}
+                result={isCorrect}
+            />
         </div>
     );
 };
