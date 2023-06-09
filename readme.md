@@ -2,7 +2,7 @@
 
 A React application that allows users to sort a set of random values. 
 
-[Deployed Link]()
+[Deployed Link](https://sorting-quiz.netlify.app/)
 ## Overview
 
 The Quiz Game consists of the following components:
