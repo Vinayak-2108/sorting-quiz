@@ -27,7 +27,7 @@ const App = () => {
       <>
       <div style={{
       position: 'absolute',
-      backgroundColor: `${dragging ? '':('pink')}`,
+      backgroundColor: `${dragging ? '':('purple')}`,
       borderRadius: '50%',
       opacity: 0.6,
       transform: `translate(${position.x}px, ${position.y}px)`,

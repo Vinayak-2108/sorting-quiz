@@ -3,6 +3,7 @@ import ResultModal from "./ResultModal/ResultModal";
 import { motion } from "framer-motion";
 
 export const DragLists = () => {
+    // Define states
     const [sortedValues, setSortedValues] = useState([]);
     const [values, setValues] = useState([]);
     const [userInput, setUserInput] = useState([]);
@@ -39,8 +40,8 @@ export const DragLists = () => {
             setIsDragging(true);
         }, 0);
     };
-
-    const handleDragEnter = (e, params) => {
+    // Handle drop event
+    const handleDrop = (e, params) => {
         const currentItem = dragItem.current;
         const currId = currentItem.id;
         const currIndex = currentItem.index;
@@ -75,15 +76,16 @@ export const DragLists = () => {
     const handleDragOver = (event) => {
         event.preventDefault();
     };
+    // Handle drag over event for input list
     const handleDragOverInput = (event) => {
         event.preventDefault();
         event.target.classList.add("active");
     };
-
+    // Handle drag leave event
     const handleDragLeave = (event) => {
         event.target.classList.remove("active");
     };
-
+    // Handle drag end event
     const handleDragEnd = () => {
         dragNode.current.removeEventListener("dragend", handleDragEnd);
         dragItem.current = null;
@@ -100,20 +102,22 @@ export const DragLists = () => {
 
         isCorrectAnswer ? setIsCorrect("true") : setIsCorrect("false");
     };
-
+    // Check if any input bucket is null
     const isAllFilled = userInput.every((value) => value !== null);
+    // Helper function to add styles
     const getstyles = (params) => {
         const currentItem = dragItem.current;
         if (
             currentItem.id === params.id &&
             currentItem.index === params.index
         ) {
-            return "bg-gray-500";
+            return "bg-gray-500 opacity-30";
         }
         return "";
     };
     return (
         <div className="flex flex-col items-center justify-center h-[80%] w-1/2 glassmorphism cursor-none border-solid border-2 ">
+             {/* Input buckets */}
             <div className="mb-8 flex flex-col justify-center items-center">
                 <h2 className="text-xl font-bold mb-2 blue_gradient">
                     Sort the list in Ascending order!
@@ -141,7 +145,7 @@ export const DragLists = () => {
                             onDrop={
                                 isDragging
                                     ? (e) => {
-                                          handleDragEnter(e, {
+                                          handleDrop(e, {
                                               id: "input",
                                               index,
                                           });
@@ -154,6 +158,8 @@ export const DragLists = () => {
                     ))}
                 </div>
             </div>
+
+            {/* Values to be sorted */}
             <div className="mb-8 flex flex-col justify-between items-center">
                
                 <div
@@ -167,7 +173,7 @@ export const DragLists = () => {
                     onDrop={
                         isDragging
                             ? (e) =>
-                                  handleDragEnter(e, { id: "values", index: 0 })
+                                  handleDrop(e, { id: "values", index: 0 })
                             : null
                     }
                     className={`flex justify-center rounded-lg border-dotted border-2 p-2 pr-0 min-w-[48px] min-h-[48px] `}
@@ -187,7 +193,7 @@ export const DragLists = () => {
                             onDrop={
                                 isDragging
                                     ? (e) => {
-                                          handleDragEnter(e, {
+                                          handleDrop(e, {
                                               id: "values",
                                               index,
                                           });
@@ -200,6 +206,7 @@ export const DragLists = () => {
                     ))}
                 </div>
             </div>
+            {/* Check button: if all the input buckets are not filled, the button is disabled */}
             {isAllFilled ? (
                 <motion.button
                     className={`mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded`}
@@ -219,6 +226,7 @@ export const DragLists = () => {
                     Check
                 </button>
             )}
+            {/* Result Modal */}
             <ResultModal
                 open={openModal}
                 onClose={generateRandomValues}
